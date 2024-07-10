@@ -1,17 +1,22 @@
+import BlogHero from "@/components/BlogHero";
 
-import BlogHero from '@/components/BlogHero';
-
-import { loadBlogPost } from '@/helpers/file-helpers';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import styles from './postSlug.module.css';
+import CodeSnippet from "@/components/CodeSnippet";
+import { loadBlogPost } from "@/helpers/file-helpers";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import dynamic from "next/dynamic";
+import styles from "./postSlug.module.css";
 
 export async function generateMetadata({ params }) {
   const blogPost = await loadBlogPost(params.postSlug);
   return {
     title: blogPost.frontmatter.title,
-    description: blogPost.frontmatter.abstract
-  }
+    description: blogPost.frontmatter.abstract,
+  };
 }
+
+const DivisionGroupsDemo = dynamic(() =>
+  import("@/components/DivisionGroupsDemo")
+);
 
 async function BlogPost({ params }) {
   const blogPost = await loadBlogPost(params.postSlug);
@@ -23,7 +28,13 @@ async function BlogPost({ params }) {
         publishedOn={new Date(blogPost.frontmatter.publishedOn)}
       />
       <div className={styles.page}>
-        <MDXRemote source={blogPost.content} />
+        <MDXRemote
+          source={blogPost.content}
+          components={{
+            pre: CodeSnippet,
+            DivisionGroupsDemo,
+          }}
+        />
       </div>
     </article>
   );
